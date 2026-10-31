@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>توجيه | Tawjeeh - نظام مواقف الكلية الذكية</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                        },
+                        neon: {
+                            teal: '#00f2fe',
+                            blue: '#4facfe',
+                            green: '#10b981',
+                            amber: '#f59e0b',
+                            rose: '#f43f5e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Readex+Pro:wght@300;400;600;700&display=swap');
+
+        * {
+            font-family: 'Readex Pro', system-ui, -apple-system, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #060913;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(0, 242, 254, 0.08) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(79, 172, 254, 0.08) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: #f1f5f9;
+        }
+
+        .glass-card {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+        }
+
+        .glass-interactive {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-interactive:active {
+            transform: scale(0.97);
+        }
+
+        .neon-glow-teal {
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.35);
+        }
+
+        .pulse-online {
+            animation: pulse-ring 2s infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(56, 189, 248, 0.3);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex justify-center items-start p-2 sm:p-4 md:p-6 pb-12">
+
+<div class="w-full max-w-md mx-auto space-y-4">
+
+    <!-- Header Section -->
+    <header class="glass-card rounded-2xl p-4 flex items-center justify-between border-b border-cyan-500/20">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/30">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V11m0 0V8a2 2 0 012-2h2a2 2 0 012 2v3m-6 0h6"/>
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">توجيه | Tawjeeh</h1>
+                <p class="text-xs text-slate-400 flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 pulse-online"></span>
+                    حالة النظام: مباشر ومفتوح
+                </p>
+            </div>
+        </div>
+
+        <button onclick="quickAutoReserve()" class="glass-interactive px-3 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-semibold flex items-center gap-1 hover:bg-cyan-500/20">
+            <svg class="w-4 h-4 text-cyan-400 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            حجز سريع
+        </button>
+    </header>
+
+    <!-- Location Switcher -->
+    <div class="glass-card rounded-xl p-1.5 flex gap-1 text-xs">
+        <button onclick="selectBuilding(this, 'حاسب')" class="bld-btn flex-1 py-2 text-center rounded-lg font-semibold bg-cyan-500 text-slate-950 transition-all shadow-md">
+            مبنى الحاسب
+        </button>
+        <button onclick="selectBuilding(this, 'إدارة')" class="bld-btn flex-1 py-2 text-center rounded-lg font-semibold text-slate-400 hover:text-white transition-all">
+            المبنى الرئيسي
+        </button>
+        <button onclick="selectBuilding(this, 'هندسة')" class="bld-btn flex-1 py-2 text-center rounded-lg font-semibold text-slate-400 hover:text-white transition-all">
+            كلية الهندسة
+        </button>
+    </div>
+
+    <!-- Live Analytics Counters -->
+    <div class="grid grid-cols-4 gap-2">
+        <div class="glass-card p-3 rounded-2xl text-center border-emerald-500/20">
+            <span class="block text-[10px] text-slate-400 font-medium">المتاحة</span>
+            <span id="stat-available" class="text-xl font-bold text-emerald-400">8</span>
+        </div>
+        <div class="glass-card p-3 rounded-2xl text-center border-amber-500/20">
+            <span class="block text-[10px] text-slate-400 font-medium">المحجوزة</span>
+            <span id="stat-reserved" class="text-xl font-bold text-amber-400">1</span>
+        </div>
+        <div class="glass-card p-3 rounded-2xl text-center border-rose-500/20">
+            <span class="block text-[10px] text-slate-400 font-medium">المشغولة</span>
+            <span id="stat-occupied" class="text-xl font-bold text-rose-400">3</span>
+        </div>
+        <div class="glass-card p-3 rounded-2xl text-center border-cyan-500/20">
+            <span class="block text-[10px] text-slate-400 font-medium">الكل</span>
+            <span class="text-xl font-bold text-cyan-400">12</span>
+        </div>
+    </div>
+
+    <!-- Active Reservation Banner -->
+    <div id="active-res-card" class="hidden glass-card rounded-2xl p-4 border-2 border-cyan-400/50 neon-glow-teal relative overflow-hidden">
+        <div class="absolute -left-10 -bottom-10 w-32 h-32 bg-cyan-500/10 rounded-full blur-xl pointer-events-none"></div>
+        <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 text-[10px] font-bold border border-cyan-500/30">حجز نشط مؤقت</span>
+                <span id="active-spot-id" class="text-sm font-bold text-white">الموقف A2</span>
+            </div>
+            <div class="text-xs text-slate-400">الوقت المتبقي:</div>
+        </div>
+
+        <div class="flex items-center justify-between">
+            <div>
+                <div id="timer-display" class="text-3xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400">05:00</div>
+                <p class="text-[10px] text-slate-400 mt-0.5">يرجى التأكيد عند الوصول للبوابة</p>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="cancelReservation()" class="px-3 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-semibold border border-rose-500/30 transition">
+                    إلغاء
+                </button>
+                <button onclick="confirmArrival()" class="px-3 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20">
+                    فتح البوابة 🔓
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Pills -->
+    <div class="flex items-center justify-between px-1">
+        <span class="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+            </svg>
+            مخطط المواقف الحية:
+        </span>
+        <div class="flex gap-1 text-[11px]">
+            <button onclick="filterGrid('all')" class="filter-btn px-2.5 py-1 rounded-lg bg-slate-800 text-cyan-300 font-medium">الكل</button>
+            <button onclick="filterGrid('available')" class="filter-btn px-2.5 py-1 rounded-lg bg-slate-900 text-slate-400 font-medium hover:text-white">المتاحة</button>
+            <button onclick="filterGrid('handicap')" class="filter-btn px-2.5 py-1 rounded-lg bg-slate-900 text-slate-400 font-medium hover:text-white">ذوي الهمم ♿</button>
+        </div>
+    </div>
+
+    <!-- Parking Interactive Grid -->
+    <div id="parking-grid" class="grid grid-cols-3 gap-2.5"></div>
+
+    <!-- AI Computer Vision & IoT Camera Simulation Box -->
+    <div class="glass-card rounded-2xl p-3.5 space-y-2 border-slate-700/50">
+        <div class="flex items-center justify-between text-xs border-b border-slate-700/50 pb-2">
+            <div class="flex items-center gap-1.5 text-cyan-300 font-semibold">
+                <svg class="w-4 h-4 animate-spin text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                </svg>
+                رصد الكاميرات الذكية (Computer Vision)
+            </div>
+            <span class="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">كاميرا #01 نشطة</span>
+        </div>
+        <div id="ai-logs" class="h-20 overflow-y-auto space-y-1.5 text-[11px] text-slate-400 pr-1">
+            <p class="flex items-center justify-between">
+                <span>🟢 تم التعرف على موقف شاغر: <strong class="text-slate-200">A1</strong></span>
+                <span class="text-[9px] text-slate-500">الآن</span>
+            </p>
+            <p class="flex items-center justify-between">
+                <span>🔴 وصول سيارة للموقف: <strong class="text-slate-200">B2</strong></span>
+                <span class="text-[9px] text-slate-500">منذ دقيقتين</span>
+            </p>
+        </div>
+    </div>
+
+</div>
+
+<!-- Modal Dialog -->
+<div id="reserve-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="glass-card w-full max-w-xs rounded-2xl p-5 space-y-4 border-cyan-500/30 text-center">
+        <div class="w-12 h-12 rounded-2xl bg-cyan-500/20 text-cyan-300 flex items-center justify-center mx-auto border border-cyan-500/30">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+        </div>
+        <div>
+            <h3 class="text-lg font-bold text-white">تأكيد حجز الموقف</h3>
+            <p id="modal-spot-name" class="text-sm font-semibold text-cyan-400 mt-1">الموقف A1</p>
+            <p class="text-xs text-slate-400 mt-2">يبعد مسافة <span class="text-emerald-400 font-bold">40 ثانية مشياً</span> عن مدخل المبنى.</p>
+        </div>
+        <div class="flex gap-2 pt-2">
+            <button onclick="closeModal()" class="flex-1 py-2.5 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold">إلغاء</button>
+            <button onclick="confirmReservation()" class="flex-1 py-2.5 rounded-xl bg-cyan-500 text-slate-950 font-bold text-xs">تأكيد الحجز</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const initialSpots = [
+        { id: 'A1', status: 'available', type: 'regular', walkTime: '30 ثانية' },
+        { id: 'A2', status: 'available', type: 'regular', walkTime: '45 ثانية' },
+        { id: 'A3', status: 'occupied', type: 'regular', walkTime: '50 ثانية' },
+        { id: 'A4', status: 'available', type: 'handicap', walkTime: '15 ثانية' },
+        { id: 'B1', status: 'available', type: 'regular', walkTime: '1 دقيقة' },
+        { id: 'B2', status: 'occupied', type: 'regular', walkTime: '1 دقيقة' },
+        { id: 'B3', status: 'reserved', type: 'regular', walkTime: '1.2 دقيقة' },
+        { id: 'B4', status: 'available', type: 'handicap', walkTime: '20 ثانية' },
+        { id: 'C1', status: 'available', type: 'regular', walkTime: '1.5 دقيقة' },
+        { id: 'C2', status: 'available', type: 'regular', walkTime: '1.5 دقيقة' },
+        { id: 'C3', status: 'occupied', type: 'regular', walkTime: '2 دقيقة' },
+        { id: 'C4', status: 'available', type: 'regular', walkTime: '2 دقيقة' },
+    ];
+
+    let spots = [...initialSpots];
+    let selectedSpotId = null;
+    let activeReservation = null;
+    let timerInterval = null;
+    let filterMode = 'all';
+
+    const carIcon = `<svg class="w-6 h-6 text-rose-400 mx-auto animate-pulse" fill="currentColor" viewBox="0 0 24 24"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99z"/></svg>`;
+
+    function renderGrid() {
+        const grid = document.getElementById('parking-grid');
+        grid.innerHTML = '';
+
+        spots.forEach(spot => {
+            if (filterMode === 'available' && spot.status !== 'available') return;
+            if (filterMode === 'handicap' && spot.type !== 'handicap') return;
+
+            let statusBg = 'border-slate-700/60 bg-slate-900/40 text-slate-400';
+            let badgeText = 'متاح';
+            let badgeClass = 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+
+            if (spot.status === 'available') {
+                statusBg = 'border-emerald-500/40 bg-emerald-500/5 text-emerald-300 hover:border-emerald-400 cursor-pointer';
+            } else if (spot.status === 'occupied') {
+                statusBg = 'border-rose-500/30 bg-rose-500/5 text-rose-400 cursor-not-allowed';
+                badgeText = 'مشغول';
+                badgeClass = 'bg-rose-500/10 text-rose-400 border-rose-500/20';
+            } else if (spot.status === 'reserved') {
+                statusBg = 'border-amber-500/40 bg-amber-500/5 text-amber-300 cursor-not-allowed';
+                badgeText = 'محجوز';
+                badgeClass = 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+            }
+
+            const spotEl = document.createElement('div');
+            spotEl.className = `glass-card glass-interactive rounded-2xl p-3 border text-center relative flex flex-col justify-between h-24 ${statusBg}`;
+            spotEl.onclick = () => handleSpotClick(spot);
+
+            spotEl.innerHTML = `
+                <div class="flex items-center justify-between text-[10px]">
+                    <span class="font-bold text-xs text-white">${spot.id}</span>
+                    <span class="px-1.5 py-0.5 rounded-full border ${badgeClass}">${badgeText}</span>
+                </div>
+                <div class="my-auto">
+                    ${spot.status === 'occupied' ? carIcon : `<div class="text-xs font-medium text-slate-400">${spot.walkTime}</div>`}
+                </div>
+                <div class="w-full h-1 rounded-full ${spot.status === 'available' ? 'bg-emerald-500/40' : spot.status === 'occupied' ? 'bg-rose-500/40' : 'bg-amber-500/40'}"></div>
+            `;
+            grid.appendChild(spotEl);
+        });
+        updateCounters();
+    }
+
+    function updateCounters() {
+        document.getElementById('stat-available').innerText = spots.filter(s => s.status === 'available').length;
+        document.getElementById('stat-reserved').innerText = spots.filter(s => s.status === 'reserved').length;
+        document.getElementById('stat-occupied').innerText = spots.filter(s => s.status === 'occupied').length;
+    }
+
+    function handleSpotClick(spot) {
+        if (spot.status !== 'available') return;
+        selectedSpotId = spot.id;
+        document.getElementById('modal-spot-name').innerText = `الموقف ${spot.id}`;
+        document.getElementById('reserve-modal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+        document.getElementById('reserve-modal').classList.add('hidden');
+        selectedSpotId = null;
+    }
+
+    function confirmReservation() {
+        if (!selectedSpotId) return;
+        if (activeReservation) {
+            const oldSpot = spots.find(s => s.id === activeReservation);
+            if (oldSpot) oldSpot.status = 'available';
+        }
+        const spot = spots.find(s => s.id === selectedSpotId);
+        if (spot) {
+            spot.status = 'reserved';
+            activeReservation = spot.id;
+        }
+        closeModal();
+        renderGrid();
+        startTimer();
+    }
+
+    function startTimer() {
+        const card = document.getElementById('active-res-card');
+        const display = document.getElementById('timer-display');
+        document.getElementById('active-spot-id').innerText = `الموقف ${activeReservation}`;
+        card.classList.remove('hidden');
+        let duration = 300;
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            let m = Math.floor(duration / 60);
+            let s = duration % 60;
+            display.innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+            if (duration <= 0) {
+                clearInterval(timerInterval);
+                cancelReservation();
+            }
+            duration--;
+        }, 1000);
+    }
+
+    function cancelReservation() {
+        if (!activeReservation) return;
+        const spot = spots.find(s => s.id === activeReservation);
+        if (spot) spot.status = 'available';
+        activeReservation = null;
+        clearInterval(timerInterval);
+        document.getElementById('active-res-card').classList.add('hidden');
+        renderGrid();
+    }
+
+    function confirmArrival() {
+        if (!activeReservation) return;
+        const spot = spots.find(s => s.id === activeReservation);
+        if (spot) spot.status = 'occupied';
+        activeReservation = null;
+        clearInterval(timerInterval);
+        document.getElementById('active-res-card').classList.add('hidden');
+        renderGrid();
+    }
+
+    function quickAutoReserve() {
+        const firstAvailable = spots.find(s => s.status === 'available');
+        if (firstAvailable) handleSpotClick(firstAvailable);
+    }
+
+    function filterGrid(mode) {
+        filterMode = mode;
+        renderGrid();
+    }
+
+    function selectBuilding(btn, name) {
+        document.querySelectorAll('.bld-btn').forEach(b => {
+            b.classList.remove('bg-cyan-500', 'text-slate-950');
+            b.classList.add('text-slate-400');
+        });
+        btn.classList.add('bg-cyan-500', 'text-slate-950');
+        btn.classList.remove('text-slate-400');
+    }
+
+    window.onload = () => renderGrid();
+</script>
+</body>
+</html>
